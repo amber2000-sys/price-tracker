@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 
+
 def getData(url):
     try:
         data = requests.get(url)
@@ -8,6 +9,7 @@ def getData(url):
     except Exception as e:
         print('could not get data')
         print(e)
+
 
 def getSoup(data):
     try:
@@ -17,8 +19,8 @@ def getSoup(data):
         print('could not create soup')
         print(e)
 
+
 def Scrap_flipkart(q):
     url = 'https://www.flipkart.com/search?q='+'+'.join(q.split())
-    print('url', url)
 
-    
+    print('url', url)
