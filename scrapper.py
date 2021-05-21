@@ -20,7 +20,17 @@ def getSoup(data):
         print(e)
 
 
-def Scrap_flipkart(q):
-    url = 'https://www.flipkart.com/search?q='+'+'.join(q.split())
+def Scrap_flipkart(url):
+    data = getData(url)
+    soup = getSoup(data)
+    # print(soup)
+    details = {}
+    details['name'] = soup.find('span', {'class': 'B_NuCI'}).text
+    details['price'] = soup.find('div', {'class': '_30jeq3'}).text
 
-    print('url', url)
+    return details
+
+
+def Scrap_Amazon(url):
+    data = getData()
+    soup = getSoup(data.text)
