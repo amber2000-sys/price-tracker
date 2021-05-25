@@ -5,13 +5,17 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-class Image(Base):
+class Product(Base):
 
     __tablename__ = "images"
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    filename = Column(String)
+    link = Column(String)
+    website = Column(String)
+    time = Column(String)
+    price = Column(Integer)
+    lastprice = Column(Integer)
 
 
 if __name__ == "__main__":

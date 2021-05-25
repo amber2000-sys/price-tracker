@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
+from datetime import datetime
 
 
 def getData(url):
@@ -27,7 +28,10 @@ def Scrap_flipkart(url):
     details = {}
     details['name'] = soup.find('span', {'class': 'B_NuCI'}).text
     details['price'] = soup.find('div', {'class': '_30jeq3'}).text
-
+    details['link'] = url
+    details['website'] = 'Flipkart'
+    now = datetime.now().strftime("%d/%m/%Y")
+    details['time'] = now
     return details
 
 
