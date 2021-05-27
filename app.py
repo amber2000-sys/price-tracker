@@ -21,7 +21,7 @@ selOpt = sidebar.selectbox("Choose What to do?", choices)
 
 
 def intro():
-    pass
+    pass 
 
 
 def searchProduct():
