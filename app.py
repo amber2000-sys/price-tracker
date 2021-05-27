@@ -11,7 +11,6 @@ sess = Session()
 st.title("Live Price Tracker")
 
 st.image('logo.png')
-st.header("Write description of your project....")
 st.markdown("---")
 sidebar = st.sidebar
 
@@ -21,7 +20,24 @@ selOpt = sidebar.selectbox("Choose What to do?", choices)
 
 
 def intro():
-    pass
+    # st.markdown("""#### Price Tracker is Python Data Science project for
+    # tracking live prices of products on Ecommerce Websites.
+    # """)
+
+    st.markdown("""
+        <h4>Price Tracker is Python Data Science project for 
+    tracking live prices of products on Ecommerce Websites.</h4>
+    """, unsafe_allow_html=True)
+
+    col1, col2 = st.beta_columns(2)
+    col1.image("img1.gif")
+
+    st.markdown("""
+        ### Features of Project
+        1. Search product from various websites
+        2. Set the Custom Tracking Time
+        3. Get email when price dropped
+    """)
 
 
 def searchProduct():
