@@ -30,13 +30,14 @@ def intro():
     """, unsafe_allow_html=True)
 
     col1, col2 = st.beta_columns(2)
-    col1.image("img1.gif")
+    col1.image("amb.jpg")
 
     st.markdown("""
         ### Features of Project
         1. Search product from various websites
         2. Set the Custom Tracking Time
         3. Get email when price dropped
+        4. If you have an eCommerce store, you can use a dynamic pricing system to draw from the tracked data to update your prices automatically.
     """)
 
 
