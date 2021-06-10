@@ -1,21 +1,21 @@
-import sqlalchemy
-from sqlalchemy import create_engine, Column, Integer, String, Float
+from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, DateTime
 from sqlalchemy.ext.declarative import declarative_base
+from datetime import datetime
 
 Base = declarative_base()
 
 
 class Product(Base):
 
-    __tablename__ = "images"
+    __tablename__ = "products"
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    link = Column(String)
-    website = Column(String)
-    time = Column(String)
-    price = Column(Integer)
-    lastprice = Column(Integer)
+    price = Column(Float)
+    deal = Column(Boolean)
+    url = Column(String)
+    date = Column(DateTime, default=datetime.utcnow)
+    website = Column(String, default='amazon')
 
 
 if __name__ == "__main__":
