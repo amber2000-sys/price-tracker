@@ -1,3 +1,4 @@
+from utils import sendMail
 import streamlit as st
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
@@ -33,12 +34,12 @@ def intro():
     # """)
 
     st.markdown("""
-        <h4>Price Tracker is Python Data Science project for 
-    tracking live prices of products on Ecommerce Websites.</h4>
+        <h2>Price Tracker is Python Data Science project for 
+    tracking live prices of products on Ecommerce Websites.</h2>
     """, unsafe_allow_html=True)
 
     col1, col2 = st.beta_columns(2)
-    col1.image("amb.jpg")
+    # col1.image("amb.jpg")
 
     st.markdown("""
         ### Features of Project
@@ -73,9 +74,12 @@ def searchProduct():
 
     st.subheader('Run Tracker ')
     time_gap = st.select_slider("How Much time difference between each tracking call", [
-                                'No delay', '10 sec', '10 mins', '1 hour', '12 hours', '1 day'])
+                                'No delay', '10 sec', '10 mins', '1 hour', '12 hours', '1 day', '3 days'])
+    mail_addr = st.text_input("Enter Your Mail")
     btn2 = st.button('Run Tracker continously')
-    if (amz_urls or flip_urls or myn_urls) and btn2:
+
+
+    if (amz_urls or flip_urls or myn_urls) and btn2 and mail_addr:
         if time_gap == '10 sec':
             wait = 10
         elif time_gap == '10 mins':
@@ -86,6 +90,8 @@ def searchProduct():
             wait = 60 * 60 * 12
         elif time_gap == '1 day':
             wait = 60 * 60 * 24
+        elif time_gap == '3 day':
+            wait = 60 * 60 * 24 * 3
         elif time_gap == 'No delay':
             wait = 0
         else:
@@ -144,18 +150,18 @@ def searchProduct():
                 myntradata = data[data.website == 'myntra']
                 if amz_urls:
                     if amzdata.iloc[-1]['price'] < amzdata.iloc[-2]['price']:
-                        if post(mail_addr, amz_urls, product_name, amzdata.iloc[-1]['price'], amzdata.iloc[-1]['website']):
+                        if sendMail(mail_addr, amz_urls, product_name, amzdata.iloc[-1]['price'], amzdata.iloc[-1]['website']):
                             st.success(
                                 'Price fell at amazon , mail notification sent to {mail_addr}')
                 if flip_urls:
                     if flipkartdata.iloc[-1]['price'] < flipkartdata.iloc[-2]['price']:
-                        if post(mail_addr, flip_urls, product_name, flipkartdata.iloc[-1]['price'], flipkartdata.iloc[-1]['website']):
+                        if sendMail(mail_addr, flip_urls, product_name, flipkartdata.iloc[-1]['price'], flipkartdata.iloc[-1]['website']):
                             st.success(
                                 'Price fell at flipkart , mail notification sent to {mail_addr}')
 
                 if myn_urls:
                     if myntradata.iloc[-1]['price'] < myntradata.iloc[-2]['price']:
-                        if post(mail_addr, myn_urls, product_name, myntradata.iloc[-1]['price'], myntradata.iloc[-1]['website']):
+                        if sendMail(mail_addr, myn_urls, product_name, myntradata.iloc[-1]['price'], myntradata.iloc[-1]['website']):
                             st.success(
                                 'Price fell at myntra , mail notification sent to {mail_addr}')
 
