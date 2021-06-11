@@ -5,7 +5,7 @@ from datetime import datetime
 Base = declarative_base()
 
 
-class Product(Base):
+class Products(Base):
 
     __tablename__ = "products"
 

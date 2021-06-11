@@ -2,7 +2,12 @@ import streamlit as st
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from scrapper import *
-from database import Product
+from database import Products
+import scrapper as sc
+import pandas as pd
+from datetime import datetime
+import plotly.express as px
+
 
 engine = create_engine('sqlite:///db.sqlite3')
 Session = sessionmaker(bind=engine)
@@ -18,6 +23,9 @@ sidebar.header("Choose your option")
 choices = ["Project Overview", "Search Product"]
 selOpt = sidebar.selectbox("Choose What to do?", choices)
 
+plot_area = st.empty()
+data_area = st.empty()
+data = None
 
 def intro():
     # st.markdown("""#### Price Tracker is Python Data Science project for
@@ -41,29 +49,124 @@ def intro():
 
 
 def searchProduct():
-    link = st.text_input('Enter Your Product URL')
-    site = st.radio('Select the Website', ['Flipkart', 'Amazon', 'Myntra'])
-    btn = st.button('Submit')
+    product_name = st.text_input('enter the product name to show')
+    amz_urls = st.text_input('Enter url for amazon')
+    flip_urls = st.text_input('Enter url for flipkart')
+    myn_urls = st.text_input('Enter url for Myntra')
+    btn = st.button('Check tracker')
+    if (amz_urls or flip_urls or myn_urls) and btn:
+        df = []
+        if amz_urls:
+            details = sc.extract_amazon_data(amz_urls)
+            df.append(details)
 
-    if btn and link and site == 'Flipkart':
-        with st.spinner("Scrapping Data ..."):
-            details = Scrap_flipkart(link)
-            st.text(details)
+        if flip_urls:
+            details = sc.extract_flipkart_data(flip_urls)
+            df.append(details)
 
-        with st.spinner("Saving Data..."):
-            try:
-                product = Product(name=details['name'],
-                                  link=details['link'],
-                                  website=details['website'],
-                                  time=details['time'],
-                                  price=details['price'],
-                                  lastprice=0)
+        if myn_urls:
+            details = sc.extract_myntra_data(myn_urls)
+            df.append(details)
+
+        st.write(pd.DataFrame(df))
+
+    st.subheader('Run Tracker ')
+    time_gap = st.select_slider("How Much time difference between each tracking call", [
+                                'No delay', '10 sec', '10 mins', '1 hour', '12 hours', '1 day'])
+    btn2 = st.button('Run Tracker continously')
+    if (amz_urls or flip_urls or myn_urls) and btn2:
+        if time_gap == '10 sec':
+            wait = 10
+        elif time_gap == '10 mins':
+            wait = 60 * 10
+        elif time_gap == '1 hour':
+            wait = 60 * 60
+        elif time_gap == '12 hours':
+            wait = 60 * 60 * 12
+        elif time_gap == '1 day':
+            wait = 60 * 60 * 24
+        elif time_gap == 'No delay':
+            wait = 0
+        else:
+            wait = 5
+
+        dfs = []
+        while True:
+            if amz_urls:
+                details = sc.extract_amazon_data(amz_urls)
+                details['date'] = datetime.utcnow()
+                product = Products(name=details['name'],
+                                   price=details['price'],
+                                   deal=details['deal'],
+                                   url=details['url'],
+                                   date=details['date'],
+                                   website=details['website'])
+                dfs.append(details)
                 sess.add(product)
                 sess.commit()
-                st.success('Product Saved Successfully')
-            except Exception as e:
-                print(e)
-                st.error('Something went Wrong')
+            if flip_urls:
+                details = sc.extract_flipkart_data(flip_urls)
+                details['date'] = datetime.utcnow()
+                product = Products(name=details['name'],
+                                   price=details['price'],
+                                   deal=details['deal'],
+                                   url=details['url'],
+                                   date=details['date'],
+                                   website=details['website'])
+                dfs.append(details)
+                sess.add(product)
+                sess.commit()
+            if myn_urls:
+                details = sc.extract_myntra_data(myn_urls)
+                details['date'] = datetime.utcnow()
+                product = Products(name=details['name'],
+                                   price=details['price'],
+                                   deal=details['deal'],
+                                   url=details['url'],
+                                   date=details['date'],
+                                   website=details['website'])
+                dfs.append(details)
+                sess.add(product)
+                sess.commit()
+
+            data = pd.DataFrame(dfs)
+            data['date'] = pd.to_datetime(data['date'])
+            fig = px.line(data_frame=data, x=data.index,
+                          y=data['price'], line_group='name', color='website')
+            plot_area.subheader('graphical output')
+            plot_area.plotly_chart(fig)
+            data_area.write(data)
+            if mail_addr and data.shape[0] >= 12:
+                lowest_value = 0
+                amzdata = data[data.website == 'amazon']
+                flipkartdata = data[data.website == 'flipkart']
+                myntradata = data[data.website == 'myntra']
+                if amz_urls:
+                    if amzdata.iloc[-1]['price'] < amzdata.iloc[-2]['price']:
+                        if post(mail_addr, amz_urls, product_name, amzdata.iloc[-1]['price'], amzdata.iloc[-1]['website']):
+                            st.success(
+                                'Price fell at amazon , mail notification sent to {mail_addr}')
+                if flip_urls:
+                    if flipkartdata.iloc[-1]['price'] < flipkartdata.iloc[-2]['price']:
+                        if post(mail_addr, flip_urls, product_name, flipkartdata.iloc[-1]['price'], flipkartdata.iloc[-1]['website']):
+                            st.success(
+                                'Price fell at flipkart , mail notification sent to {mail_addr}')
+
+                if myn_urls:
+                    if myntradata.iloc[-1]['price'] < myntradata.iloc[-2]['price']:
+                        if post(mail_addr, myn_urls, product_name, myntradata.iloc[-1]['price'], myntradata.iloc[-1]['website']):
+                            st.success(
+                                'Price fell at myntra , mail notification sent to {mail_addr}')
+
+            time.sleep(wait)
+
+    op = st.sidebar.checkbox("show tracked product data manually")
+    if op:
+        try:
+            df = pd.read_sql('products', engine)
+            st.write(df)
+        except Exception as e:
+            st.error('No tracking data available')
 
 
 if selOpt == choices[0]:
