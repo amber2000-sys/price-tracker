@@ -70,7 +70,14 @@ def searchProduct():
             details = sc.extract_myntra_data(myn_urls)
             df.append(details)
 
-        st.write(pd.DataFrame(df))
+        st.write(df)
+
+        st.markdown(f"""
+            <h2>Name : </h2>
+            <h3>{df[0]['name']}</h3>
+            <h2>Name : </h2>
+            <h3>{df[0]['name']}</h3>
+        """, unsafe_allow_html=True)
 
     st.subheader('Run Tracker ')
     time_gap = st.select_slider("How Much time difference between each tracking call", [
