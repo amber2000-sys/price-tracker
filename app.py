@@ -28,6 +28,17 @@ plot_area = st.empty()
 data_area = st.empty()
 data = None
 
+st.markdown("""
+    <style>
+        .main{
+            background: linear-gradient(to right, #fff8, #fff8), url(https://www.american.edu/programs/shared/data-science/images/datascience-og.jpg) no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+
 def intro():
     # st.markdown("""#### Price Tracker is Python Data Science project for
     # tracking live prices of products on Ecommerce Websites.
@@ -84,7 +95,6 @@ def searchProduct():
                                 'No delay', '10 sec', '10 mins', '1 hour', '12 hours', '1 day', '3 days'])
     mail_addr = st.text_input("Enter Your Mail")
     btn2 = st.button('Run Tracker continously')
-
 
     if (amz_urls or flip_urls or myn_urls) and btn2 and mail_addr:
         if time_gap == '10 sec':
