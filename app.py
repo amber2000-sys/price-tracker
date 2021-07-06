@@ -31,7 +31,8 @@ data = None
 st.markdown("""
     <style>
         .main{
-            background: linear-gradient(to right, #fff8, #fff8), url(https://www.american.edu/programs/shared/data-science/images/datascience-og.jpg) no-repeat;
+            background: linear-gradient(to right, #fff8, #fff8), 
+            url(https://www.american.edu/programs/shared/data-science/images/datascience-og.jpg) no-repeat;
             background-attachment: fixed;
             background-size: cover;
         }
@@ -87,7 +88,7 @@ def searchProduct():
             <h2>Name : </h2>
             <h3>{df[0]['name']}</h3>
             <h2>Name : </h2>
-            <h3>{df[0]['name']}</h3>
+            <h3>{df[0]}</h3>
         """, unsafe_allow_html=True)
 
     st.subheader('Run Tracker ')
